@@ -49,7 +49,9 @@ describe ActiveSupport::Cache::LibmemcachedStore do
     end
 
     def listen_to_instrumentation
-      old, ActiveSupport::Cache::Store.instrument = ActiveSupport::Cache::Store.instrument, true
+      if ActiveSupport::VERSION::MAJOR == 3
+        old, ActiveSupport::Cache::Store.instrument = ActiveSupport::Cache::Store.instrument, true
+      end
       called = []
       key = //
       ActiveSupport::Notifications.subscribe(key) do |*args|
@@ -60,7 +62,9 @@ describe ActiveSupport::Cache::LibmemcachedStore do
       called
     ensure
       ActiveSupport::Notifications.unsubscribe(key)
-      ActiveSupport::Cache::Store.instrument = old
+      if ActiveSupport::VERSION::MAJOR == 3
+        ActiveSupport::Cache::Store.instrument = old
+      end
     end
 
     it "fetch_without_cache_miss" do
