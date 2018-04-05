@@ -1,5 +1,5 @@
 require 'memcached'
-require 'libmemcached_store/get_with_flags'
+require 'libmemcached_store/memcached_with_flags'
 
 require 'digest/md5'
 
@@ -23,10 +23,6 @@ module ActiveSupport
     # :client => { :no_block => true }
     #
     class LibmemcachedStore
-      class MemcachedWithFlags < Memcached
-        include ::LibmemcachedStore::GetWithFlags
-      end
-
       class FetchWithRaceConditionTTLEntry
         attr_accessor :value, :extended
 
@@ -82,7 +78,7 @@ module ActiveSupport
 
         @options = {compress_threshold: DEFAULT_COMPRESS_THRESHOLD}.merge(options)
         @addresses = addresses
-        @cache = MemcachedWithFlags.new(@addresses, DEFAULT_CLIENT_OPTIONS.merge(client_options))
+        @cache = ::LibmemcachedStore::MemcachedWithFlags.new(@addresses, DEFAULT_CLIENT_OPTIONS.merge(client_options))
       end
 
       def fetch(key, options = nil, &block)

@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.2.0'
 
-  s.add_dependency('memcached', '~> 1.8.0') # re-check lib/memcached/get_with_flags.rb before bumping
+  s.add_dependency('memcached', '~> 1.8.0') # re-check lib/memcached/memcached_with_flags.rb before bumping
 
   s.add_development_dependency('rack')
   s.add_development_dependency('rake')

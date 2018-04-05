@@ -3,7 +3,7 @@
 # This is useful to set compression flag.
 #
 module LibmemcachedStore
-  module GetWithFlags
+  class MemcachedWithFlags < Memcached
     def get(keys, marshal=true, with_flags=false)
       if keys.is_a? Array
         # Multi get
