@@ -31,19 +31,23 @@ class ActionDispatch::IntegrationTest < ActiveSupport::TestCase
   def self.build_app(routes = nil)
     RoutedRackApp.new(routes || ActionDispatch::Routing::RouteSet.new) do |middleware|
       if defined?(ActionDispatch::PublicExceptions)
-        middleware.use "ActionDispatch::ShowExceptions", ActionDispatch::PublicExceptions.new("/dev/null")
-        middleware.use "ActionDispatch::DebugExceptions"
+        middleware.use ActionDispatch::ShowExceptions, ActionDispatch::PublicExceptions.new("/dev/null")
+        middleware.use ActionDispatch::DebugExceptions
       else
-        middleware.use "ActionDispatch::ShowExceptions"
+        middleware.use ActionDispatch::ShowExceptions
       end
-      middleware.use "ActionDispatch::Callbacks"
-      middleware.use "ActionDispatch::ParamsParser"
-      middleware.use "ActionDispatch::Cookies"
-      middleware.use "ActionDispatch::Flash"
-      if ActionPack::VERSION::MAJOR >= 4
-        middleware.use "Rack::Head"
+      middleware.use ActionDispatch::Callbacks
+      if defined?(ActionDispatch::Http::Parameters::ParseError)
+        middleware.use ActionDispatch::Http::Parameters::ParseError
       else
-        middleware.use "ActionDispatch::Head"
+        middleware.use ActionDispatch::ParamsParser
+      end
+      middleware.use ActionDispatch::Cookies
+      middleware.use ActionDispatch::Flash
+      if ActionPack::VERSION::MAJOR >= 4
+        middleware.use Rack::Head
+      else
+        middleware.use ActionDispatch::Head
       end
       yield(middleware) if block_given?
     end

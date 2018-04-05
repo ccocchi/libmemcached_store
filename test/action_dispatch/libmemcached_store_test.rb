@@ -1,8 +1,10 @@
 require_relative '../test_helper'
-require File.expand_path('../abstract_unit', __FILE__)
+require_relative 'abstract_unit'
 require 'action_dispatch/session/libmemcached_store'
 
 class LibMemcachedStoreTest < ActionDispatch::IntegrationTest
+  self.test_order = :sorted if respond_to?(:test_order=)
+
   class TestController < ActionController::Base
     def no_session_access
       head :ok
@@ -147,7 +149,7 @@ class LibMemcachedStoreTest < ActionDispatch::IntegrationTest
 
       get '/get_session_value'
       assert_response :success
-      assert_equal nil, headers['Set-Cookie'], "should not resend the cookie again if session_id cookie is already exists"
+      assert_nil headers['Set-Cookie'], "should not resend the cookie again if session_id cookie is already exists"
     end
   end
 
