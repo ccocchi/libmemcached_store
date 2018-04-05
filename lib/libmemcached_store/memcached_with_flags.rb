@@ -7,35 +7,35 @@ require 'memcached'
 
 module LibmemcachedStore
   class MemcachedWithFlags < Memcached
-    def get(keys, marshal=true, with_flags=false)
+    def get(keys, decode=true, with_flags=false)
       if keys.is_a? Array
-        # Multi get
-        ret = Memcached::Lib.memcached_mget(@struct, keys);
+        # inlined multi_get with changes to make it return flags and ignore cas
+        ret = Lib.memcached_mget(@struct, keys)
         check_return_code(ret, keys)
 
-        hash, flags_hash = {}, {}
-        value, key, flags, ret = Memcached::Lib.memcached_fetch_rvalue(@struct)
+        hash = {}
+        flags_hash = {} if with_flags
+        value, key, flags, ret = Lib.memcached_fetch_rvalue(@struct)
         while ret != 21 do # Lib::MEMCACHED_END
           if ret == 0 # Lib::MEMCACHED_SUCCESS
-            hash[key] = value
             flags_hash[key] = flags if with_flags
+            hash[key] = decode ? [value, flags] : value
           elsif ret != 16 # Lib::MEMCACHED_NOTFOUND
             check_return_code(ret, key)
           end
-          value, key, flags, ret = Memcached::Lib.memcached_fetch_rvalue(@struct)
+          value, key, flags, ret = Lib.memcached_fetch_rvalue(@struct)
         end
-        if marshal
-          hash.each do |key, value|
-            hash[key] = Marshal.load(value)
+        if decode
+          hash.each do |key, value_and_flags|
+            hash[key] = @codec.decode(key, *value_and_flags)
           end
         end
+
+        # actual code we need
         with_flags ? [hash, flags_hash] : hash
       else
-        # Single get
-        value, flags, ret = Memcached::Lib.memcached_get_rvalue(@struct, keys)
-        check_return_code(ret, keys)
-        value =  Marshal.load(value) if marshal
-        with_flags ? [value, flags] : value
+        result = single_get(keys, decode)
+        with_flags ? result.first(2) : result.first
       end
     rescue => e
       tries ||= 0
