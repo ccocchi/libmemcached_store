@@ -2,6 +2,9 @@
 # Allow get method to returns value + entry's flags
 # This is useful to set compression flag.
 #
+
+require 'memcached'
+
 module LibmemcachedStore
   class MemcachedWithFlags < Memcached
     def get(keys, marshal=true, with_flags=false)
