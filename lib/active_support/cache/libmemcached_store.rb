@@ -1,5 +1,5 @@
 require 'memcached'
-require 'memcached/get_with_flags'
+require 'libmemcached_store/get_with_flags'
 
 require 'digest/md5'
 
@@ -24,7 +24,7 @@ module ActiveSupport
     #
     class LibmemcachedStore
       class MemcachedWithFlags < Memcached
-        include GetWithFlags
+        include ::LibmemcachedStore::GetWithFlags
       end
 
       class FetchWithRaceConditionTTLEntry
