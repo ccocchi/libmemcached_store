@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
   s.files       = `git ls-files lib`.split("\n")
 
-  s.required_ruby_version = '>= 2.0.0'
+  s.required_ruby_version = '>= 2.2.0'
 
   s.add_dependency('memcached')
 
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('dalli')
   s.add_development_dependency('minitest')
   s.add_development_dependency('minitest-rg')
-  s.add_development_dependency('activesupport', '>= 3')
-  s.add_development_dependency('actionpack', '>= 3')
+  s.add_development_dependency('activesupport', '>= 3', '< 5')
+  s.add_development_dependency('actionpack', '>= 3', '< 5')
 end
 

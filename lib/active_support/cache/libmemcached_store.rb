@@ -295,7 +295,8 @@ module ActiveSupport
         value
       end
 
-      def normalize_key(key)
+      # TODO: support namespace or other things passed as option
+      def normalize_key(key, _options = nil)
         escape_and_normalize(expanded_key(key))
       end
 

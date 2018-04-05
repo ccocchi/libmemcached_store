@@ -119,7 +119,7 @@ describe ActiveSupport::Cache::LibmemcachedStore do
 
     it "should_read_and_write_nil" do
       assert @cache.write('foo', nil)
-      assert_equal nil, @cache.read('foo')
+      assert_nil @cache.read('foo')
     end
 
     it "should_read_and_write_false" do
@@ -452,12 +452,14 @@ describe ActiveSupport::Cache::LibmemcachedStore do
       future = Time.now + 3 * 60
       Time.stubs(:now).returns future
 
-      Thread.new do
+      t = Thread.new do
         sleep 0.1
-        fetch { raise }.must_equal 1 # 3rd fetch -> read expired value
+        fetch { raise } # 3rd fetch -> read expired value
       end
+
       fetch { sleep 0.2; 2 }.must_equal 2 # 2nd fetch -> takes time to generate but returns correct value
       fetch { 3 }.must_equal 2 # 4th fetch still correct value
+      t.value.must_equal 1
     end
 
     it "can be read by a normal read" do

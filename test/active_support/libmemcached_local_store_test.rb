@@ -76,16 +76,16 @@ describe ActiveSupport::Cache::LibmemcachedLocalStore do
     it "caches nil in local cache" do
       @cache.with_local_cache do
         @memcache.expects(get: nil)
-        @cache.read('xxx').must_equal nil
+        @cache.read('xxx').must_be_nil
         @memcache.expects(:get).never
-        @cache.read('xxx').must_equal nil
+        @cache.read('xxx').must_be_nil
       end
     end
 
     it "does not call local_cache multiple times" do
       @cache.with_local_cache do
         @cache.expects(local_cache: @cache.send(:local_cache))
-        @cache.read('xxx').must_equal nil
+        @cache.read('xxx').must_be_nil
       end
     end
   end
